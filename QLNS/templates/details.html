@@ -1,0 +1,47 @@
+{% extends 'layout/base.html' %}
+
+{% block content %}
+    <h1 class="text-center text-success">CHI TIẾT SẢN PHẨM</h1>
+    <div class="row">
+        <div class="col-md-4 col-sm-6">
+            <img src="{{ book.image }}" class="img-fluid" alt="{{ book.name }}" />
+        </div>
+        <div class="col-md-8 col-sm-6">
+            <h1>{{ book.name }}</h1>
+            <h5>Tác giả: {{ book.author }}</h5>
+            <p>Nội Dung: {{ book.description|safe }}</p>
+            <h3>Giá: {{ "{:,.0f}".format(book.price) }} VNĐ</h3>
+            {% for t in book.tags %}
+            <span class="badge bg-success">{{ t.name }}</span>
+            {% endfor %}
+             <a href="javascript:;" onclick="addToCart({{book.id}}, '{{book.name}}', {{book.price}})" class="btn btn-danger" class="btn btn-danger">Đặt hàng</a>
+        </div>
+    </div>
+
+<hr>
+
+{% if current_user.is_authenticated %}
+<div>
+    <div class="form-group">
+        <textarea id="comment-content" class="form-control" placeholder="Nội dung bình luận"></textarea>
+    </div>
+    <div class="mt-1">
+        <input type="button" onclick="addComment({{ book.id }})" value="Thêm bình luận" class="btn btn-info" />
+    </div>
+</div>
+{% else %}
+<p>Vui lòng <a href="/login?next=/book/{{book.id}}">đăng nhập</a> để bình luận!</p>
+{% endif %}
+
+<div class="spinner-grow text-primary my-spinner"></div>
+<ul class="list-group mt-2" id="comments"></ul>
+{% endblock %}
+
+{% block js %}
+<script src="{{ url_for('static', filename='js/details.js') }}"></script>
+<script>
+    window.onload = function() {
+        loadComments({{ book.id }})
+    }
+</script>
+{% endblock %}
